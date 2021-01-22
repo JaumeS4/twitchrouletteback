@@ -5,7 +5,10 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const envFound = dotenv.config();
 
-if (envFound.error) throw new Error("Coudln't find .env files");
+if (process.env.NODE_ENV == 'development') {
+    if (envFound.error) throw new Error("Coudln't find .env files");
+}
+
 
 // @TODO Handle undefined string (remove || '').
 
