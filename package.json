@@ -1,0 +1,41 @@
+{
+  "name": "twitchrouletteback",
+  "version": "1.0.0",
+  "description": "Backend for a frontend roulette integrated with twitch chat",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node build/index.js",
+    "start:heroku": "node build/index.js",
+    "start:dev": "nodemon",
+    "build": "rimraf ./build && tsc",
+    "build:heroku": "tsc",
+    "postinstall": "npm run build:heroku",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jaume Sastre",
+  "license": "ISC",
+  "dependencies": {
+    "@types/tmi.js": "^1.7.1",
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "reflect-metadata": "^0.1.13",
+    "socket.io": "^3.1.0",
+    "tmi.js": "^1.7.1",
+    "typedi": "^0.10.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.9",
+    "@types/express": "^4.17.11",
+    "@types/mongoose": "^5.10.3",
+    "@types/morgan": "^1.9.2",
+    "@types/node": "^14.14.22",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}
