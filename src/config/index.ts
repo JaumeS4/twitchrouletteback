@@ -19,6 +19,22 @@ export default {
     port: parseInt(process.env.PORT || '', 10),
 
     /**
+     * DB URL from mongo atlas
+     */
+    databaseURL: process.env.MONGODB_URI || '',
+
+    /**
+     * Folder to store uploaded images
+     */
+    uploadsFolder: process.env.UPLOADS_FOLDER || './uploads/',
+
+    /**
+     * JWT Things
+     */
+    jwtSecret: process.env.JWT_SECRET || '',
+    jwtExpiration: process.env.JWT_EXPIRATION || '',
+
+    /**
      * Used by winston logger
      */
     logs: {
@@ -37,6 +53,23 @@ export default {
      */
     tmi: {
         debug: ( process.env.TMI_DEBUG == "true" ) || false,
-        channels: process.env.TMI_CHANNELS?.split(' ')
+    },
+
+    /**
+     * TWITCH configs
+     */
+    twitch: {
+        client: process.env.TWITCH_CLIENT_ID || '',
+        secret: process.env.TWITCH_CLIENT_SECRET || '',
+        redirect_uri: process.env.TWITCH_REDIRECT_URI
+    },
+
+    /**
+     * CLOUDINARY configs
+     */
+    cloudinary: {
+        name: process.env.CLOUDINARY_NAME,
+        key: process.env.CLOUDINARY_KEY,
+        secret: process.env.CLOUDINARY_SECRET,
     }
 }

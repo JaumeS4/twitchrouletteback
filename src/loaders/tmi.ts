@@ -1,8 +1,10 @@
 import tmi from 'tmi.js';
 import {Container} from "typedi";
 
-import TwitchService from "../services/twitch";
+import TmiService from "../services/tmi";
 import config from '../config';
+import {ObjectId} from "mongoose";
+import UserService from "../services/user";
 
 const opts: tmi.Options = {
     options: {
@@ -11,14 +13,23 @@ const opts: tmi.Options = {
     connection: {
         reconnect: true,
     },
-    channels: config.tmi.channels
 }
 
-const twitchService = Container.get(TwitchService);
+const tmiInstance = Container.get(TmiService);
 
-const client = new tmi.client(opts);
-client.on('message', twitchService.onMessageHandler);
+export const tmiClient = new tmi.client(opts);
+tmiClient.on('chat', tmiInstance.onMessageHandler);
 
-const twitchClientLoader = async() => await client.connect();
+const tmiClientLoader = async() => {
+    await tmiClient.connect();
+    await tmiInstance.connectToChannels();
+};
 
-export default twitchClientLoader;
+// TODO: Mover esto a tmi service
+export const connectToNewChannel = async (mongoUserId: ObjectId) => {
+    const userInstance = Container.get(UserService);
+    const user = await userInstance.getUser(mongoUserId);
+    await tmiClient.join(user.twitchName);
+}
+
+export default tmiClientLoader;

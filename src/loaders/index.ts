@@ -2,13 +2,17 @@
 import { Application } from 'express';
 
 import Logger from './logger';
+import mongooseLoader from './mongoose';
 import dependencyInjectorLoader from './dependencyInjector';
 import expressLoader from './express';
 import socketIOLoader from './socket-io';
-import twitchClientLoader from "./tmi";
+import tmiClientLoader from "./tmi";
+import cloudinaryLoader from './cloudinary';
 import {Server} from "http";
 
 export default async ({ expressApp, httpServer }: { expressApp: Application, httpServer: Server }) => {
+    await mongooseLoader();
+    Logger.info('DB loaded and connected!');
 
     await expressLoader({ app: expressApp });
     Logger.info('Express Initialized');
@@ -20,6 +24,11 @@ export default async ({ expressApp, httpServer }: { expressApp: Application, htt
     await dependencyInjectorLoader({ ioClient: ioClient });
     Logger.info('Dependency Injector loaded');
 
-    await twitchClientLoader();
-    Logger.info('TwitchClient Initialized');
+    await tmiClientLoader();
+    Logger.info('tmiClient Initialized');
+
+    await cloudinaryLoader();
+    Logger.info('Cloudinary Initialized');
+
+
 }

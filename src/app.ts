@@ -2,11 +2,12 @@ import 'reflect-metadata';
 
 import express from 'express';
 import http from 'http';
-import {Container} from "typedi";
+import {Container} from 'typedi';
 
 import config from './config';
 import Logger from './loaders/logger';
 import SocketService from "./services/socket";
+import TmiService from "./services/tmi";
 
 async function startServer(): Promise<void> {
     const app = express();
