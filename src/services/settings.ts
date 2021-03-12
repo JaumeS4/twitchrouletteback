@@ -2,7 +2,13 @@ import {Container, Inject, Service} from "typedi";
 import {Logger} from "winston";
 import Database from "./database";
 import {ObjectId} from "mongoose";
-import {ISettings, ISettingsBasicDTO, ISettingsImageDTO, ISettingsSongDTO} from "../interfaces/ISettings";
+import {
+    ISettings,
+    ISettingsBasicDTO,
+    ISettingsImageDTO,
+    ISettingsImageSettingsDTO,
+    ISettingsSongDTO
+} from "../interfaces/ISettings";
 import UserService from "./user";
 
 @Service()
@@ -30,6 +36,11 @@ export default class SettingsService {
     public async updateBasicSettings(userId: ObjectId, settings: ISettingsBasicDTO): Promise<void> {
         const databaseInstance = Container.get(Database);
         await databaseInstance.setSettingsBasic(userId, settings);
+    }
+
+    public async updateImageSettings(userId: ObjectId, settings: ISettingsImageSettingsDTO): Promise<void> {
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.updateSettingsImage(userId, settings);
     }
 
     public async saveImageUrl(userId: ObjectId, image: ISettingsImageDTO): Promise<void> {

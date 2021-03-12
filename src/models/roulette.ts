@@ -39,6 +39,11 @@ const Roulette = new mongoose.Schema({
         default: true,
     },
 
+    spinning: {
+        type: Boolean,
+        default: false,
+    }
+
 });
 
 export default mongoose.model('Roulette', Roulette);

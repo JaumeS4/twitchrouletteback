@@ -83,7 +83,7 @@ export default (app: Router) => {
                 const rouletteInstance = Container.get(RouletteService);
                 const {
                     user: { twitchId, twitchName, twitchProfileImageUrl, rouletteToken },
-                    settings: { rouletteDuration, rouletteLaps, song, defaultUsers, colors, songUrl, imageUrl },
+                    settings: { rouletteDuration, rouletteLaps, song, defaultUsers, colors, songUrl, imageUrl, imageHeight, imageWidth, imageBackgroundSize, radioRoulette, marginTextRoulette },
                     roulette: { users, subMode, followMode, colorIndex, defaultRouletteActive }
                 } = await rouletteInstance.validateTokenRespData(token);
 
@@ -102,7 +102,12 @@ export default (app: Router) => {
                         defaultUsers,
                         colors,
                         songUrl,
-                        imageUrl
+                        imageUrl,
+                        imageHeight,
+                        imageWidth,
+                        imageBackgroundSize,
+                        radioRoulette,
+                        marginTextRoulette
                     },
                     roulette: {
                         users,

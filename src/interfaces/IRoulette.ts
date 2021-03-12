@@ -13,4 +13,5 @@ export interface IRoulette {
     followMode: boolean;
     colorIndex: number;
     defaultRouletteActive: boolean;
+    spinning: boolean;
 }

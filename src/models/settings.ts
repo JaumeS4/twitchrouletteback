@@ -58,9 +58,35 @@ const Settings = new mongoose.Schema({
         type: String,
         default: null,
     },
+
     imagePublicId: {
         type: String,
         default: null,
+    },
+
+    imageWidth: {
+        type: Number,
+        default: 170,
+    },
+
+    imageHeight: {
+        type: Number,
+        default: 170,
+    },
+
+    imageBackgroundSize: {
+        type: Number,
+        default: 180
+    },
+
+    radioRoulette: {
+        type: Number,
+        default: 40,
+    },
+
+    marginTextRoulette: {
+        type: Number,
+        default: 0,
     }
 });
 

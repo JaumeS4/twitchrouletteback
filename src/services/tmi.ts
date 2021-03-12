@@ -71,6 +71,33 @@ export default class TmiService {
             }
 
         }
+
+        if (command.startsWith('!ruletasong')) {
+            if (user.mod || user['user-type'] === 'mod' || user.username === channel.substring(1)) {
+
+                const commandArg = command.split(' ')[1];
+
+                if (!commandArg) return;
+
+                if (commandArg === 'on') {
+                    await socketService.updateSong(channelFixed, true);
+                } else if (commandArg === 'off') {
+                    await socketService.updateSong(channelFixed, false);
+                }
+            }
+        }
+
+        if (command === '!tirar') {
+
+            if (user.mod || user['user-type'] === 'mod' || user.username === channel.substring(1))
+                await socketService.spinRoulette(channelFixed);
+
+        }
+
+        if (command === '!reiniciar') {
+            if (user.mod || user['user-type'] === 'mod' || user.username === channel.substring(1))
+                await socketService.resetRoulette(channelFixed);
+        }
     }
 
 }

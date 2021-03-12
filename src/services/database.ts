@@ -1,6 +1,12 @@
 import {Service} from "typedi";
 import { ObjectId} from "mongoose";
-import {ISettings, ISettingsBasicDTO, ISettingsImageDTO, ISettingsSongDTO} from "../interfaces/ISettings";
+import {
+    ISettings,
+    ISettingsBasicDTO,
+    ISettingsImageDTO,
+    ISettingsImageSettingsDTO,
+    ISettingsSongDTO
+} from "../interfaces/ISettings";
 import {IUser} from "../interfaces/IUser";
 import {IRoulette} from "../interfaces/IRoulette";
 
@@ -59,6 +65,10 @@ export default class Database {
         return SettingsModel.updateOne({ user: userId }, settings);
     }
 
+    public async updateSettingsImage(userId: ObjectId, settings: ISettingsImageSettingsDTO) {
+        return SettingsModel.updateOne({ user: userId }, settings);
+    }
+
     public async setImageUrl(userId: ObjectId, image: ISettingsImageDTO) {
         return SettingsModel.updateOne({ user: userId }, image);
     }
@@ -92,7 +102,11 @@ export default class Database {
     }
 
     public async resetRoulette(userId: ObjectId) {
-        return RouletteModel.updateOne({ user: userId }, { users: [], colorIndex: 0, defaultRouletteActive: true });
+        return RouletteModel.updateOne({ user: userId }, { users: [], colorIndex: 0, defaultRouletteActive: true, spinning: false });
+    }
+
+    public async updateSpinning(userId: ObjectId, bool: boolean) {
+        return RouletteModel.updateOne({ user: userId }, { spinning: bool });
     }
 
     public async updateSubMode(userId: ObjectId, bool: boolean) {

@@ -73,6 +73,11 @@ export default class RouletteService {
         await databaseInstance.updateSubMode(userId, bool);
     }
 
+    public async updateSpinning(userId: ObjectId, spinning: boolean) {
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.updateSpinning(userId, spinning);
+    }
+
     public async addUserFromTwitch(channelName: string, user: any) {
         const userInstance = Container.get(UserService);
         const { _id } = await userInstance.getUserWithChannelName(channelName);
@@ -155,10 +160,42 @@ export default class RouletteService {
     }
 
     public async updateSubModeFromTwitch(channelName: string, bool: boolean) {
-        const userInstance = Container.get(UserService);
+        const userId = await this.getUserIdWithTwitchName(channelName);
         const databaseInstance = Container.get(Database);
-        const { _id } = await userInstance.getUserWithChannelName(channelName);
-        await databaseInstance.updateSubMode(_id, bool);
+        await databaseInstance.updateSubMode(userId, bool);
     }
+
+    public async updateSongFromTwitch(channelName: string, bool: boolean) {
+        const userId = await this.getUserIdWithTwitchName(channelName);
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.updateSongBool(userId, bool);
+    }
+
+    public async resetRouletteFromTwitch(channelName: string) {
+        const userId = await this.getUserIdWithTwitchName(channelName);
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.resetRoulette(userId);
+    }
+
+    public async getSpinningWithTwitchName(channelName: string) {
+        const userId = await this.getUserIdWithTwitchName(channelName);
+        const databaseInstance = Container.get(Database);
+        const { spinning } = await databaseInstance.getRoulette(userId);
+        return spinning;
+    }
+
+    public async updateSpinningWithTwitchName(channelName: string, spinning: boolean) {
+        const userId = await this.getUserIdWithTwitchName(channelName);
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.updateSpinning(userId, spinning);
+    }
+
+    private async getUserIdWithTwitchName(channelName: string) {
+        const userInstance = Container.get(UserService);
+        const { _id } = await userInstance.getUserWithChannelName(channelName);
+        return _id;
+    }
+
+
 
 }
