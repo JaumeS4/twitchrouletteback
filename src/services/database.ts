@@ -53,6 +53,10 @@ export default class Database {
         return UserModel.updateOne({_id: mongoId}, {twitchName, twitchProfileImageUrl});
     }
 
+    public async updateViewedNews( userId: ObjectId, bool: boolean ) {
+        return UserModel.findByIdAndUpdate(userId, { viewedNews: bool });
+    }
+
     public async createSettings(userId: ObjectId) {
         return await SettingsModel.create({user: userId});
     }
@@ -109,8 +113,20 @@ export default class Database {
         return RouletteModel.updateOne({ user: userId }, { spinning: bool });
     }
 
+    public async updateLoadingManualUsers(userId: ObjectId, bool: boolean) {
+        return RouletteModel.updateOne({ user: userId }, { loadingUsers: bool });
+    }
+
+    public async updateLoadingWaitingUsers(userId: ObjectId, bool: boolean) {
+        return RouletteModel.updateOne({ user: userId }, { loadingWaitingUsers: bool });
+    }
+
     public async updateSubMode(userId: ObjectId, bool: boolean) {
         return RouletteModel.updateOne({ user: userId }, { subMode: bool });
+    }
+
+    public async updateManualMode(userId: ObjectId, bool: boolean) {
+        return RouletteModel.updateOne({ user: userId }, { manualMode: bool });
     }
 
     public async updateFollowMode(userId: ObjectId, bool: boolean) {
@@ -119,6 +135,26 @@ export default class Database {
 
     public async addUser(userId: ObjectId, user: any) {
         return RouletteModel.updateOne({ user: userId }, { $push: { users: user } });
+    }
+
+    public async addUserWaiting(userId: ObjectId, user: any) {
+        return RouletteModel.updateOne({ user: userId }, { $push: { usersWaiting: user } });
+    }
+
+    public async findUserWaiting(userId: ObjectId, name: string) {
+        return RouletteModel.find( { $and: [
+                { user: userId },
+                { usersWaiting: { $elemMatch: { name, fromMod: false } } }
+            ] } )
+    }
+
+    public async getUsersWaiting(userId: ObjectId) {
+        const { usersWaiting } = await RouletteModel.findOne({user: userId});
+        return usersWaiting;
+    }
+
+    public async resetUsersWaiting(userId: ObjectId) {
+        return RouletteModel.updateOne({ user: userId}, { usersWaiting: [] });
     }
 
     public async removeUser(userId: ObjectId, userUid: string) {

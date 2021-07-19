@@ -19,6 +19,11 @@ const Roulette = new mongoose.Schema({
         default: [],
     },
 
+    usersWaiting: {
+        type: Array,
+        default: [],
+    },
+
     subMode: {
         type: Boolean,
         default: false,
@@ -27,6 +32,11 @@ const Roulette = new mongoose.Schema({
     followMode: {
         type: Boolean,
         default: true,
+    },
+
+    manualMode: {
+        type: Boolean,
+        default: false,
     },
 
     colorIndex: {
@@ -40,6 +50,16 @@ const Roulette = new mongoose.Schema({
     },
 
     spinning: {
+        type: Boolean,
+        default: false,
+    },
+
+    loadingManualUsers: {
+        type: Boolean,
+        default: false,
+    },
+
+    loadingWaitingUsers: {
         type: Boolean,
         default: false,
     }

@@ -20,13 +20,15 @@ export default (app: Router) => {
 
             try {
                 const rouletteInstance = Container.get(RouletteService);
-                const { users, followMode, subMode, colorIndex, defaultRouletteActive } = await rouletteInstance.getRoulette(req._id);
+                const { users, followMode, subMode, manualMode, loadingManualUsers, colorIndex, defaultRouletteActive } = await rouletteInstance.getRoulette(req._id);
                 return res.status(200).json({
                     ok: true,
                     roulette: {
                         users,
                         followMode,
                         subMode,
+                        manualMode,
+                        loadingManualUsers,
                         colorIndex,
                         defaultRouletteActive,
                     }
@@ -84,7 +86,7 @@ export default (app: Router) => {
                 const {
                     user: { twitchId, twitchName, twitchProfileImageUrl, rouletteToken },
                     settings: { rouletteDuration, rouletteLaps, song, defaultUsers, colors, songUrl, imageUrl, imageHeight, imageWidth, imageBackgroundSize, radioRoulette, marginTextRoulette },
-                    roulette: { users, subMode, followMode, colorIndex, defaultRouletteActive }
+                    roulette: { users, subMode, followMode, manualMode, loadingManualUsers, colorIndex, defaultRouletteActive }
                 } = await rouletteInstance.validateTokenRespData(token);
 
                 return res.json({
@@ -113,6 +115,8 @@ export default (app: Router) => {
                         users,
                         subMode,
                         followMode,
+                        manualMode,
+                        loadingManualUsers,
                         colorIndex,
                         defaultRouletteActive
                     }

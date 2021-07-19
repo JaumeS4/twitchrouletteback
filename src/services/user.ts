@@ -35,6 +35,11 @@ export default class UserService {
         return databaseInstance.updateRouletteToken(mongoId, token);
     }
 
+    public async updateViewedNews(mongoId: ObjectId, bool: boolean): Promise<void> {
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.updateViewedNews(mongoId, bool);
+    }
+
     public async checkVerified(mongoId: ObjectId): Promise<boolean> {
         const databaseInstance = Container.get(Database);
         const user = await databaseInstance.getUserWithMongoId(mongoId);

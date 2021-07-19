@@ -14,7 +14,7 @@ export default class AuthService {
     constructor(@Inject('logger') private logger: Logger) {
     }
 
-    public async SignIn(code: string):Promise<{ token: string, verified: boolean, userId: ObjectId, twitchId: string, twitchName: string, twitchProfileImageUrl: string, rouletteToken: string }> {
+    public async SignIn(code: string):Promise<{ token: string, verified: boolean, userId: ObjectId, twitchId: string, twitchName: string, twitchProfileImageUrl: string, rouletteToken: string, viewedNews: boolean  }> {
         try {
             const databaseInstance = Container.get(Database);
             const tokens = await getTwitchToken(code);
@@ -48,6 +48,7 @@ export default class AuthService {
                 twitchName: userData.login,
                 twitchProfileImageUrl: userData.profile_image_url,
                 rouletteToken: (userRecord ? userRecord.rouletteToken : ''),
+                viewedNews: userData.viewedNews
             };
 
         } catch (e) {
@@ -57,13 +58,13 @@ export default class AuthService {
 
     }
 
-    public async ValidateToken(token: string): Promise<{ token: string | undefined, userId: ObjectId, verified: boolean, twitchId: string, twitchName: string, twitchProfileImageUrl: string, rouletteToken: string }> {
+    public async ValidateToken(token: string): Promise<{ token: string | undefined, userId: ObjectId, verified: boolean, twitchId: string, twitchName: string, twitchProfileImageUrl: string, rouletteToken: string, viewedNews: boolean }> {
 
         try {
             const { _id, newToken, twitchId, twitchName, twitchProfileImageUrl } = await renewJWT(token);
 
             const userInstance = Container.get(UserService);
-            const { rouletteToken, verified } = await userInstance.getUser(_id);
+            const { rouletteToken, verified, viewedNews } = await userInstance.getUser(_id);
             return {
                 token: newToken,
                 verified,
@@ -71,7 +72,8 @@ export default class AuthService {
                 twitchId,
                 twitchName,
                 twitchProfileImageUrl,
-                rouletteToken
+                rouletteToken,
+                viewedNews
             }
         } catch (e) {
             this.logger.error(e);

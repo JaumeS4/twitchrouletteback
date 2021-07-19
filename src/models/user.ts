@@ -32,6 +32,11 @@ const User = new mongoose.Schema({
         type: String,
         default: '',
     },
+
+    viewedNews: {
+        type: Boolean,
+        default: true,
+    }
 });
 
 export default mongoose.model('User', User);

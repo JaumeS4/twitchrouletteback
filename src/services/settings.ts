@@ -58,6 +58,8 @@ export default class SettingsService {
         await databaseInstance.updateSongBool(userId, bool);
     }
 
+
+
     public async updateDefaultUsers(userId: ObjectId, users: Array<string>): Promise<void> {
         const databaseInstance = Container.get(Database);
         await databaseInstance.updateDefaultUsers(userId, users);

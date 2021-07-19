@@ -7,4 +7,5 @@ export interface IUser {
     twitchName: string;
     twitchProfileImageUrl: string;
     rouletteToken: string;
+    viewedNews: boolean;
 }

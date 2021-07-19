@@ -29,7 +29,7 @@ export default class TmiService {
         const command = msg.trim().toLowerCase();
         const channelFixed = channel.replace('#', '');
 
-        if (command === '!yo') {
+        if (command.substring(0, 2) === '!yo' || command.substring(3,4) !== 'a') {
 
             if (!user.username) return;
 
@@ -84,6 +84,22 @@ export default class TmiService {
                 } else if (commandArg === 'off') {
                     await socketService.updateSong(channelFixed, false);
                 }
+            }
+        }
+
+        if (command.startsWith('!ruletamanual')) {
+            if (user.mod || user['user-type'] === 'mod' || user.username === channel.substring(1)) {
+
+                const commandArg = command.split(' ')[1];
+
+                if (!commandArg) return;
+
+                if (commandArg === 'on') {
+                    await socketService.updateManualMode(channelFixed, true);
+                } else if (commandArg === 'off') {
+                    await socketService.updateManualMode(channelFixed, false);
+                }
+
             }
         }
 

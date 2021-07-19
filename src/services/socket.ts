@@ -54,12 +54,26 @@ export default class SocketService {
                 this.ioClient.to(twitchName).emit('add-user-state', user);
             }) ;
 
-            socket.on('remove-user-button', (userUid: string) => {
-               const rouletteInstance = Container.get(RouletteService);
-               rouletteInstance.removeUser(userId, userUid);
-               this.ioClient.to(twitchName).emit('remove-user-roulette', userUid);
-               this.ioClient.to(twitchName).emit('remove-user-state', userUid);
+            socket.on('remove-user-button', async (userUid: string) => {
+                const rouletteInstance = Container.get(RouletteService);
+                const reset = await rouletteInstance.removeUser(userId, userUid);
+                if (reset) {
+                    this.ioClient.to(twitchName).emit('remove-all-users-roulette');
+                    this.ioClient.to(twitchName).emit('remove-all-users-state');
+                } else {
+                    this.ioClient.to(twitchName).emit('remove-user-roulette', userUid);
+                    this.ioClient.to(twitchName).emit('remove-user-state', userUid);
+                }
+
             });
+
+            socket.on('add-users-button', async (usersArr) => {
+                const rouletteInstance = Container.get(RouletteService);
+                this.ioClient.to(twitchName).emit('update-loading-manual-users', true);
+                await rouletteInstance.addUsers(userId, usersArr, this.ioClient, twitchName);
+                this.ioClient.to(twitchName).emit('update-loading-manual-users', false);
+
+            })
 
             socket.on('remove-all-users-roulette', () => this.ioClient.to(twitchName).emit('remove-all-users-roulette'));
             socket.on('remove-all-users-state', () => {
@@ -118,6 +132,11 @@ export default class SocketService {
                 this.ioClient.to(twitchName).emit('update-song', bool);
             });
 
+            socket.on('update-manual-mode', (bool: boolean) => {
+                const rouletteInstance = Container.get(RouletteService);
+                rouletteInstance.updateManualMode(userId, bool);
+                this.ioClient.to(twitchName).emit('update-manual-mode', bool);
+            });
 
 
             socket.on('update-basic-settings', async (values) => socket.to(twitchName).emit('update-basic-settings', values));
@@ -143,15 +162,35 @@ export default class SocketService {
                 socket.to(twitchName).emit('new-instance-roulette')
             });
 
+            socket.on('viewed-news', () => {
+                const userInstance = Container.get(UserService);
+                userInstance.updateViewedNews(userId, true);
+            });
+
+            socket.on('add-waiting-users', () => {
+                const rouletteInstance = Container.get(RouletteService);
+                rouletteInstance.addUsersWaitingToRoulette(userId, twitchName, this.ioClient);
+            })
+
         });
 
     }
 
     public async addUserEvent(channelName: string, name: string, subscriber: boolean, fromMod: boolean) {
         const rouletteInstance = Container.get(RouletteService);
+
+        const loadingUsers = await rouletteInstance.getLoadingUserWithTwitchName(channelName);
+        if (loadingUsers) return;
+
         const spinning = await rouletteInstance.getSpinningWithTwitchName(channelName);
-        if  (spinning) return;
+
         const newUser = { name, fromMod, uid: uuid() };
+
+        if (spinning) {
+            rouletteInstance.addUserWaitingToDB(channelName, { ...newUser, subscriber});
+            return;
+        }
+
         const ok = await rouletteInstance.addUserFromTwitch(channelName, { ...newUser, subscriber });
 
         if (ok) {
@@ -162,32 +201,34 @@ export default class SocketService {
 
     public async updateSubMode(channelName: string, bool: boolean) {
         const rouletteInstance = Container.get(RouletteService);
-        const spinning = await rouletteInstance.getSpinningWithTwitchName(channelName);
-        if (spinning) return;
         await rouletteInstance.updateSubModeFromTwitch(channelName, bool);
         this.ioClient.to(channelName).emit('update-sub-mode', bool);
     }
 
+    public async updateManualMode(channelName: string, bool: boolean) {
+        const rouletteInstance = Container.get(RouletteService);
+        await rouletteInstance.updateManualModeFromTwitch(channelName, bool);
+        this.ioClient.to(channelName).emit('update-manual-mode', bool);
+    }
+
     public async updateSong(channelName: string, bool: boolean) {
         const rouletteInstance = Container.get(RouletteService);
-        const spinning = await rouletteInstance.getSpinningWithTwitchName(channelName);
-        if (spinning) return;
         await rouletteInstance.updateSongFromTwitch(channelName, bool);
         this.ioClient.to(channelName).emit('update-song', bool);
     }
 
     public async spinRoulette(channelName: string) {
         const rouletteInstance = Container.get(RouletteService);
-        const spinning = await rouletteInstance.getSpinningWithTwitchName(channelName);
-        if (spinning) return;
+        const canAddUser = await rouletteInstance.canAddUser(channelName);
+        if  (!canAddUser) return;
         await rouletteInstance.updateSpinningWithTwitchName(channelName, true);
         this.ioClient.to(channelName).emit('spin-roulette');
     }
 
     public async resetRoulette(channelName: string) {
         const rouletteInstance = Container.get(RouletteService);
-        const spinning = await rouletteInstance.getSpinningWithTwitchName(channelName);
-        if (spinning) return;
+        const canAddUser = await rouletteInstance.canAddUser(channelName);
+        if  (!canAddUser) return;
         await rouletteInstance.resetRouletteFromTwitch(channelName);
         this.ioClient.to(channelName).emit('remove-all-users-roulette');
         this.ioClient.to(channelName).emit('remove-all-users-state');

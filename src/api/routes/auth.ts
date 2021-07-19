@@ -25,7 +25,7 @@ export default (app: Router) => {
             try {
                 const { code } = req.body;
                 const authServiceInstance = Container.get(AuthService);
-                const { token, verified, userId, twitchId, twitchName, twitchProfileImageUrl, rouletteToken } = await authServiceInstance.SignIn(code);
+                const { token, verified, userId, twitchId, twitchName, twitchProfileImageUrl, rouletteToken, viewedNews } = await authServiceInstance.SignIn(code);
 
                 return res.status(200).json({
                     ok: true,
@@ -35,7 +35,8 @@ export default (app: Router) => {
                     twitchId,
                     twitchName,
                     twitchProfileImageUrl,
-                    rouletteToken
+                    rouletteToken,
+                    viewedNews,
                 });
             } catch (e) {
                 logger.error('error: %o', e);
@@ -57,7 +58,7 @@ export default (app: Router) => {
             try {
 
                 const authServiceInstance = Container.get(AuthService);
-                const { token, verified, userId, twitchId, twitchName, twitchProfileImageUrl, rouletteToken } = await authServiceInstance.ValidateToken(req.header('x-token') || '');
+                const { token, verified, userId, twitchId, twitchName, twitchProfileImageUrl, rouletteToken, viewedNews } = await authServiceInstance.ValidateToken(req.header('x-token') || '');
 
                 return res.status(200).json({
                     ok: true,
@@ -67,7 +68,8 @@ export default (app: Router) => {
                     twitchId,
                     twitchName,
                     twitchProfileImageUrl,
-                    rouletteToken
+                    rouletteToken,
+                    viewedNews
                 });
 
             } catch (e) {
