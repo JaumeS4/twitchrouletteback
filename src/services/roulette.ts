@@ -292,7 +292,7 @@ export default class RouletteService {
             ioClient.to(twitchName).emit('add-user-roulette', user);
             ioClient.to(twitchName).emit('add-user-state', user);
         }
-        await databaseInstance.updateLoadingWaitingUsers(userId, true);
+        await databaseInstance.updateLoadingWaitingUsers(userId, false);
         await databaseInstance.resetUsersWaiting(userId);
         ioClient.to(twitchName).emit('update-loading-waiting-users', false);
 
