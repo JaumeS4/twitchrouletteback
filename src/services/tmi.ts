@@ -29,8 +29,7 @@ export default class TmiService {
         const command = msg.trim().toLowerCase();
         const channelFixed = channel.replace('#', '');
 
-        if (command.substring(0, 2) === '!yo' || command.substring(3,4) !== 'a') {
-
+        if (command.substring(0, 3) === '!yo' && command.substring(3,4) !== 'a') {
             if (!user.username) return;
 
             if (user.username === channel.substring(1)) user.subscriber = true;
@@ -40,7 +39,6 @@ export default class TmiService {
         }
 
         if (command.substring(0, 4) === '!yoa') {
-
             if (user.mod || user['user-type'] === 'mod' || user.username === channel.substring(1)) {
 
                 const commandArg = command.split(' ')[1];
