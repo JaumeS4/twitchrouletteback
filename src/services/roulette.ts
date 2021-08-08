@@ -104,6 +104,8 @@ export default class RouletteService {
 
         const { defaultRouletteActive, colorIndex, users, subMode, manualMode } = await databaseInstance.getRoulette(userId);
         const { colors } = await settingsInstance.getSettings(userId);
+        const subscriber = newUser.subscriber;
+        delete newUser.subscriber;
         // TODO: Manejar if/else de una forma mas legible
         if (!newUser.fromMod) {
 
@@ -113,7 +115,7 @@ export default class RouletteService {
 
             if (subMode) {
 
-                if (newUser.subscriber) {
+                if (subscriber) {
                     if ( defaultRouletteActive ) await databaseInstance.updateDefaultRouletteActive(userId, false);
 
                     await databaseInstance.incrementColorIndex(userId, colorIndex);
@@ -264,18 +266,47 @@ export default class RouletteService {
     public async addUserWaitingToDB(channelName: string, user: any) {
         const userId = await this.getUserIdWithTwitchName(channelName);
         const databaseInstance = Container.get(Database);
+        let userAlreadyWaiting = false;
+        let userAlreadyIn = false;
 
         if (user.fromMod) {
             await databaseInstance.addUserWaiting(userId, user);
             return;
         }
 
-        const userDB = await databaseInstance.findUserWaiting(userId, user.name);
+        const usersRoulette: [{ name: string, fromMod: boolean, uid: string, subscriber: boolean }] = await databaseInstance.getUsersRoulette(userId);
 
-        if (userDB.length <= 0) {
-            await databaseInstance.addUserWaiting(userId, user);
-        }
+        usersRoulette.some( userRoulette => {
+            if (userRoulette.name === user.name && !userRoulette.fromMod) {
+                userAlreadyIn = true;
+                return;
+            }
+        } )
 
+
+        const usersWaiting: [{ name: string, fromMod: boolean, uid: string, subscriber: boolean }] = await databaseInstance.getUsersWaiting(userId);
+
+        usersWaiting.some( userWaiting => {
+            if (userWaiting.name === user.name && !userWaiting.fromMod) {
+                userAlreadyWaiting = true;
+                return;
+            };
+        });
+
+        if (!userAlreadyWaiting && !userAlreadyIn) await databaseInstance.addUserWaiting(userId, user);
+    }
+
+    public async resetWaitingUsers(userId: ObjectId) {
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.resetUsersWaiting(userId);
+        await databaseInstance.updateLoadingWaitingUsers(userId, false);
+    }
+
+    public async resetWaitingUsersWithTwitchName(channelName: string) {
+        const userId = await this.getUserIdWithTwitchName(channelName);
+        const databaseInstance = Container.get(Database);
+        await databaseInstance.resetUsersWaiting(userId);
+        await databaseInstance.updateLoadingWaitingUsers(userId, false);
     }
 
     public async addUsersWaitingToRoulette (userId: ObjectId, twitchName: string, ioClient: Server) {

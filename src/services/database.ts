@@ -105,8 +105,13 @@ export default class Database {
         return RouletteModel.findOne({user: userId});
     }
 
+    public async getUsersRoulette(userId: ObjectId) {
+        const roulette = await RouletteModel.findOne({user: userId});
+        return roulette.users;
+    }
+
     public async resetRoulette(userId: ObjectId) {
-        return RouletteModel.updateOne({ user: userId }, { users: [], colorIndex: 0, defaultRouletteActive: true, spinning: false });
+        return RouletteModel.updateOne({ user: userId }, { users: [], colorIndex: 0, defaultRouletteActive: true, spinning: false, loadingWaitingUsers: false, usersWaiting: [] });
     }
 
     public async updateSpinning(userId: ObjectId, bool: boolean) {

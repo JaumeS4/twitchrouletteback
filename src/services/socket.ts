@@ -43,6 +43,7 @@ export default class SocketService {
             socket.on('spin-roulette', () => {
                 const rouletteInstance = Container.get(RouletteService);
                 rouletteInstance.updateSpinning(userId, true);
+                rouletteInstance.resetWaitingUsers(userId);
                 this.ioClient.to(twitchName).emit('spin-roulette')
             });
             socket.on('spin-roulette-state', () => this.ioClient.to(twitchName).emit('spin-roulette-state'));
@@ -222,6 +223,7 @@ export default class SocketService {
         const canAddUser = await rouletteInstance.canAddUser(channelName);
         if  (!canAddUser) return;
         await rouletteInstance.updateSpinningWithTwitchName(channelName, true);
+        await rouletteInstance.resetWaitingUsersWithTwitchName(channelName);
         this.ioClient.to(channelName).emit('spin-roulette');
     }
 
